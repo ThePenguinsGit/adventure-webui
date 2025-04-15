@@ -27,6 +27,7 @@ import net.kyori.adventure.webui.URL_API
 import net.kyori.adventure.webui.URL_BUILD_INFO
 import net.kyori.adventure.webui.URL_EDITOR
 import net.kyori.adventure.webui.URL_IN_GAME_PREVIEW
+import net.kyori.adventure.webui.URL_JSON_TO_MINI
 import net.kyori.adventure.webui.URL_MINI_SHORTEN
 import net.kyori.adventure.webui.URL_MINI_TO_HTML
 import net.kyori.adventure.webui.URL_MINI_TO_JSON
@@ -175,6 +176,20 @@ public fun Application.miniMessage() {
                             MiniMessage.miniMessage()
                                 .deserialize(input, structure.placeholders.tagResolver)
                         )
+                )
+            }
+
+            post(URL_JSON_TO_MINI) {
+                val structure = Serializers.json.tryDecodeFromString<Combined>(call.receiveText())
+                val input = structure?.miniMessage ?: return@post
+                call.respondText(
+                    MiniMessage.miniMessage()
+                        .serialize(
+                            GsonComponentSerializer.gson()
+                            .deserialize(
+                                input
+                            )
+                    )
                 )
             }
 
